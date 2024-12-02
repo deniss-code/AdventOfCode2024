@@ -8,12 +8,14 @@ class Day1
     int[] array1;
     int[] array2;
     int listFinal = 0;
+    int counter = 0;
+    int duplicateScore = 0;
     
     string line;
     try
     {
         //Pass the file path and file name to the StreamReader constructor
-        var sr = new StreamReader("./input.txt");
+        var sr = new StreamReader("C:/Users/cluni/Documents/Coding/AdventOfCode2024/Day1/input.txt");
         //Read the first line of text
         line = sr.ReadLine();
         //Continue to read until you reach end of file
@@ -37,11 +39,26 @@ class Day1
 
         Array.Sort(array1);
         Array.Sort(array2);
-
+        
 
         for (int i = 0; i < array1.Length; i++)
         {
+            // Counter to reset the counter, for multiplication
+            counter = 0;
             listFinal += Math.Abs(array1[i] - array2[i]);
+            
+            // Task 2
+            for (int dupI = 0; dupI < array1.Length; dupI++)
+            {
+                if (array1[i] == array2[dupI])
+                {
+                    counter += 1;
+                }
+            }
+
+            duplicateScore += array1[i] * counter;
+            
+
             // if (array1[i] > array2[i])
             // {
             //     listFinal += array1[i] - array2[i];
@@ -54,7 +71,12 @@ class Day1
             //     listFinal = listFinal;
             // }
         }
+        
+        // Task 1
         Console.WriteLine(listFinal);
+        
+        // Task 2
+        Console.WriteLine(duplicateScore);
 
     }
     catch(Exception e)
