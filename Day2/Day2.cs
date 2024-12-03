@@ -1,92 +1,91 @@
 ﻿using System.IO;
 
 class Day2
-{ 
-    static void Main() {
-
-    List<int> numbers = [];
-    string line;
-    int safe = 0;
-    bool stillSafe = false;
-
+{
+    static bool IsSafe(int[] levels)
     {
-        try
+        bool increasing = levels[1] > levels[0];
+
+        for (int i = 1; i < levels.Length; i++)
         {
-            //Pass the file path and file name to the StreamReader constructor
-            var sr = new StreamReader("C:/Users/cluni/Documents/Coding/AdventOfCode2024/Day2/input.txt");
-            //Read the first line of text
-            line = sr.ReadLine();
-            //Continue to read until you reach end of file
-            while (line != null)
-            {   
-                var values = line.Split(" ");
-                // Console.WriteLine(values[0]);
-                for (int i = 0; i < values.Length; i++)
-                {
-                    numbers.Add(int.Parse(values[i]));
-                }
-                
-                
-                Array.Clear(values);
-                int[] output = numbers.ToArray();
-                numbers.Clear();
-                
-                if (output[1] > output[0])
-                {
-                    for (int i = 1; i < output.Length; i++)
-                    {
-                        if (output[i] > output[i - 1] && (Math.Abs(output[i] - output[i - 1])) <= 3 && (Math.Abs(output[i] - output[i - 1])) >= 1)
-                        {
-                            stillSafe = true;
-                        }
-                        else
-                        {
-                            stillSafe = false;
-                            break;
-                        }
-                    }
-                }
-                else if (output[1] < output[0])
-                {
-                    for (int i = 1; i < output.Length; i++)
-                    {
-                        if (output[i] < output[i - 1] && (Math.Abs(output[i] - output[i - 1])) <= 3 && (Math.Abs(output[i] - output[i - 1])) >= 1)
-                        {
-                            stillSafe = true;
-                        }
-                        else
-                        {
-                            stillSafe = false;
-                            break;
-                        }
-                    }
-                }
-                Array.Clear(output);
-                if (stillSafe == true)
-                {
-                    safe++;
-                    stillSafe = false;
-                }
-                line = sr.ReadLine();
-                
+            int diff = Math.Abs(levels[i] - levels[i - 1]);
+            if (diff == 0 || diff > 3)
+            {
+                return false;
             }
 
-            //close the file
-            sr.Close();
-            Console.WriteLine(safe);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Exception: " + e.Message);
-        }
-        finally
-        {
-            Console.WriteLine("Executing finally block.");
+            if (increasing && levels[i] < levels[i - 1])
+            {
+                return false;
+            }
+
+            if (!increasing && levels[i] > levels[i - 1])
+            {
+                return false;
+            }
         }
 
-
-
-
+        return true;
     }
+
+    static bool isSafeWithOneBad(int[] levels)
+    {
+        for (int removeIndex = 0; removeIndex < levels.Length; removeIndex++)
+        {
+            int[] modifiedNumbers = new int[levels.Length - 1];
+            int j = 0;
+
+            for (int i = 0; i < levels.Length; i++)
+            {
+                if (i != removeIndex)
+                {
+                    modifiedNumbers[j] = levels[i];
+                    j++;
+                }
+            }
+
+            if (IsSafe(modifiedNumbers))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static void Main()
+    {
+        string[] lines = File.ReadAllLines("C:/Users/cluni/Documents/Coding/AdventOfCode2024/Day2/input.txt");
+        int partOneSafeCount = 0;
+        int partTwoSafeCount = 0;
+
+
+        foreach (string line in lines)
+        {
+            string[] values = line.Split(' ');
+            int[] levels = new int[values.Length];
+
+            for (int i = 0; i < values.Length; i++)
+            {
+                levels[i] = int.Parse(values[i]);
+            }
+
+
+            if (IsSafe(levels))
+            {
+                partOneSafeCount++;
+            }
+
+            if (IsSafe(levels) || isSafeWithOneBad(levels))
+            {
+                partTwoSafeCount++;
+            }
+
+
+
+
+        }
+        Console.WriteLine($"First Task: {partOneSafeCount}");
+        Console.WriteLine($"Second Task: {partTwoSafeCount}");
     }
 }
